@@ -1,15 +1,23 @@
 //packages 
 const express = require('express')
 const bodyParser = require('body-parser');
+const endpoints = require('./RequestEndpoints')
+const expenseController = require('./controller/ExpenseController')
+const mongoose = require('mongoose');
 
 const app = express();
-app.get("/",(request,response)=>{
-    console.log("BODY"+request.body);
-    console.log("headers :",request.headers);
-    console.log("params : ",request.params)
+app.use(bodyParser.json());
 
-    response.send("hello world")
-})
+// mongo DB connection
+mongoose.connect('mongodb://root:password@localhost:27017')
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('Failed to connect to MongoDB', err));
+
+app.get(endpoints.getExpense,expenseController.getExpense);
+app.post(endpoints.saveExpense,expenseController.saveExpense);
+app.get(endpoints.saveExpense,expenseController.searchExpense);
+app.get("/expense/query",expenseController.getExpensesByCostRange);
+
 app.listen(5000,()=>{
     console.log("server started at : "+5000);
 })
